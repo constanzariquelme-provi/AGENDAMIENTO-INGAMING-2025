@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda INGAMING PROVI</title>
+  <!-- FullCalendar CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css">
+  <!-- FullCalendar JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
+    body { font-family: Arial; background-color: #f5f5f5; margin:0; padding:0; }
+    header { background:#1e1e1e; color:white; padding:20px; text-align:center; font-size:22px; font-weight:bold; }
+    .container { display:flex; flex-direction:column; align-items:center; margin:20px auto; max-width:380px; }
+    .card { background:white; border-radius:10px; padding:20px; margin:10px 0; box-shadow:0 4px 10px rgba(0,0,0,0.1); width:100%; box-sizing:border-box; }
+    #calendar { height:400px; }
+    h2 { font-size:18px; font-weight:bold; margin-bottom:15px; border-bottom:2px solid black; padding-bottom:5px; }
+    input, select { width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:8px; font-size:14px; box-sizing:border-box; }
+    input:focus, select:focus { outline:none; border:1px solid #007BFF; box-shadow:0 0 5px rgba(0,123,255,0.3); }
+    button { width:100%; padding:12px; background:#007BFF; color:white; border:none; border-radius:8px; font-size:16px; cursor:pointer; }
+    button:hover { background:#0056b3; }
+    .terms { font-size:12px; margin-top:10px; }
+    .terms input { width:auto; margin-right:5px; }
+    .terms a { color:#007BFF; text-decoration:none; }
+    .terms a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <header>
+    📅 Agenda de espacio Ingaming Provi 📅
+    <div style="font-size:14px; font-weight:normal;">Reserva tu horario de computador</div>
+  </header>
+
+  <div class="container">
+    <div id="calendar" class="card"></div>
+
+    <div class="card">
+      <h2>Selecciona un día</h2>
+      <form id="reservaForm">
+        <input type="text" id="nombre" placeholder="Nombre completo" required>
+        <input type="text" id="rut" placeholder="RUT" required>
+        <input type="email" id="email" placeholder="Correo electrónico" required>
+        <select id="pc" required>
+          <option value="">Selecciona un PC</option>
+          <option value="PC-1">PC-1</option>
+          <option value="PC-2">PC-2</option>
+          <option value="PC-3">PC-3</option>
+          <option value="PC-3">PC-4</option>
+          <option value="PC-3">PC-5</option>
+          <option value="PC-3">PC-6</option>
+          <option value="PC-3">PC-7</option>
+          <option value="PC-3">PC-8</option>
+        </select>
+
+        <select id="hora" required>
+          <option value="">Selecciona una hora</option>
+          <option value="10:00">10:00 - 11:00</option>
+          <option value="11:00">11:00 - 12:00</option>
+          <option value="12:00">12:00 - 13:00</option>
+          <option value="13:00">13:00 - 14:00</option>
+          <option value="14:00">14:00 - 15:00</option>
+          <option value="15:00">15:00 - 16:00</option>
+          <option value="16:00">16:00 - 17:00</option>
+        </select>
+
+        <div class="terms">
+          <input type="checkbox" id="terms" required>
+          <label for="terms">Acepto los <a href="https://docs.google.com/document/d/1AXmfDk6yPns2M6sLUvAvh6oECrbuwTxbGdrFea29WhM/edit?usp=sharing" target="_blank">términos y condiciones</a></label>
+        </div>
+
+        <button type="submit">Reservar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Inicializar EmailJS
+    emailjs.init("jxwzhEr3QA9TW95Js");
+
+    document.addEventListener("DOMContentLoaded", function() {
+      let selectedDate = null;
+
+      // Inicialización correcta para FullCalendar 6 global
+      const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        select: function(info) {
+          selectedDate = info.startStr;
+          console.log("Fecha seleccionada:", selectedDate);
+        },
+        height: 400
+      });
+
+      calendar.render();
+
+      document.getElementById("reservaForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        if (!selectedDate) { alert("Por favor selecciona una fecha en el calendario."); return; }
+        if (!document.getElementById("terms").checked) { alert("Debes aceptar los términos y condiciones."); return; }
+
+        const templateParams = {
+          nombre: document.getElementById("nombre").value,
+          rut: document.getElementById("rut").value,
+          email: document.getElementById("email").value,
+          pc: document.getElementById("pc").value,
+            hora: document.getElementById("hora").value,
+          fecha: selectedDate
+        };
+
+        emailjs.send("service_lsd9y3g", "template_mbrl6e1", templateParams)
+          .then(() => alert("Reserva enviada con éxito"))
+          .catch(() => alert("Error al enviar la reserva"));
+      });
+    });
+  </script>
+</body>
+</html>
